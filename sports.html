@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sports Meet Live Scores</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            text-align: center;
+            background: url('https://i.postimg.cc/YCFGkhgs/scc.png') no-repeat center center fixed;
+            background-size: cover;
+            color: white;
+            margin: 0;
+            padding: 0;
+            transition: background 0.5s, color 0.5s;
+        }
+
+        body.dark-theme {
+            background: #121212;
+            color: #ffffff;
+        }
+
+        header {
+            position: relative;
+            padding: 20px;
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logo {
+            height: 50px;
+            margin-right: 10px;
+        }
+
+        h1 {
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+            display: inline-block;
+            margin: 0;
+            font-size: 24px;
+            font-weight: 600;
+            color: white;
+        }
+
+        #admin-icon {
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.3s;
+            position: absolute;
+            right: 20px;
+        }
+
+        #admin-icon:hover {
+            background: rgba(255, 255, 255, 1);
+            transform: scale(1.1);
+        }
+
+        .chart-container {
+            width: 80%;
+            margin: 40px auto;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            backdrop-filter: blur(5px);
+        }
+
+        .bar-container {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            background: lightgray;
+            border-radius: 20px;
+            height: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .bar {
+            height: 100%;
+            border-radius: 20px;
+            text-align: right;
+            line-height: 40px;
+            font-weight: bold;
+            padding-right: 10px;
+            color: white;
+            transition: width 0.5s ease-in-out, background-color 0.3s ease;
+            text-shadow: 
+                -1px -1px 0 #000,
+                1px -1px 0 #000,
+                -1px 1px 0 #000,
+                1px 1px 0 #000;
+            transform: translateZ(0);
+        }
+
+        .bar:hover {
+            transform: scale(1.02) translateZ(10px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .mark-input {
+            margin-left: 10px;
+            display: none;
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            padding: 5px;
+            border-radius: 5px;
+            width: 60px;
+        }
+
+        #event-schedule {
+            background: rgba(255, 255, 255, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px auto;
+            width: 80%;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(2px);
+        }
+
+        #event-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        #event-list li {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 10px;
+            border-radius: 10px;
+            margin: 10px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        #event-list li:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        #event-list input {
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 16px;
+            flex: 1;
+            margin-right: 10px;
+        }
+
+        #event-list input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        #event-list button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        #event-list button:hover {
+            background: #0056b3;
+        }
+
+        #leaderboard {
+            background: rgba(255, 255, 255, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px auto;
+            width: 80%;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(2px);
+        }
+
+        #comment-section {
+            background: rgba(255, 255, 255, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px auto;
+            width: 80%;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(2px);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .theme-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.3s;
+        }
+
+        .theme-toggle:hover {
+            background: rgba(255, 255, 255, 1);
+            transform: scale(1.1);
+        }
+
+        #leaderboard ol {
+            list-style: none;
+            padding: 0;
+        }
+
+        #leaderboard li {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 10px;
+            border-radius: 10px;
+            margin: 10px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        #leaderboard li:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        #comments {
+            max-height: 300px;
+            overflow-y: auto;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .comment {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 15px;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .comment-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #ccc;
+            margin-right: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: #333;
+        }
+
+        .comment-content {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 10px;
+            border-radius: 10px;
+            max-width: 70%;
+        }
+
+        .comment-content p {
+            margin: 0;
+            font-size: 14px;
+            color: #fff;
+        }
+
+        .comment-timestamp {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-top: 5px;
+        }
+
+        #comment-input {
+            width: calc(100% - 90px);
+            padding: 10px;
+            border: none;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            font-size: 14px;
+            margin-right: 10px;
+        }
+
+        #comment-input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        #comment-section button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 10px;
+            background: #007bff;
+            color: #fff;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        #comment-section button:hover {
+            background: #0056b3;
+        }
+
+        .admin-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            color: white;
+            z-index: 1000;
+            display: none;
+        }
+
+        .admin-popup input, .admin-popup button {
+            display: block;
+            margin: 10px 0;
+            padding: 10px;
+            width: 100%;
+            border-radius: 5px;
+            border: none;
+        }
+
+        .admin-popup button {
+            background: #007bff;
+            color: white;
+            cursor: pointer;
+        }
+
+        .admin-popup button:hover {
+            background: #0056b3;
+        }
+
+        .google-login {
+            background: #4285F4;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+
+        .google-login:hover {
+            background: #357ABD;
+        }
+
+        #logout-button {
+            display: none;
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+
+        #logout-button:hover {
+            background: #c82333;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <img src="https://samithe.yolasite.com/resources/logo.gif" alt="Logo" class="logo">
+        <h1>Sports Meet Live Scores</h1>
+        <div id="admin-icon" onclick="toggleAdminPopup()">🔑</div>
+    </header>
+    <main>
+        <div class="chart-container" id="scoreboard">
+            <div class="bar-container">
+                <div id="bar-Atigala" class="bar" style="width: 80%; background: yellow;">800</div>
+                <input type="number" id="input-Atigala" class="mark-input" onchange="updateScore('Atigala', this.value)">
+            </div>
+            <div class="bar-container">
+                <div id="bar-Parakrama" class="bar" style="width: 65%; background: green;">650</div>
+                <input type="number" id="input-Parakrama" class="mark-input" onchange="updateScore('Parakrama', this.value)">
+            </div>
+            <div class="bar-container">
+                <div id="bar-Vijaya" class="bar" style="width: 90%; background: red;">900</div>
+                <input type="number" id="input-Vijaya" class="mark-input" onchange="updateScore('Vijaya', this.value)">
+            </div>
+            <div class="bar-container">
+                <div id="bar-Gemunu" class="bar" style="width: 85%; background: blue;">850</div>
+                <input type="number" id="input-Gemunu" class="mark-input" onchange="updateScore('Gemunu', this.value)">
+            </div>
+        </div>
+        <div id="event-schedule">
+            <h2>Today's Events</h2>
+            <ul id="event-list"></ul>
+        </div>
+        <div id="leaderboard">
+            <h2>Leaderboard</h2>
+            <ol id="leaderboard-list"></ol>
+        </div>
+        <div id="comment-section">
+            <h2>Comments</h2>
+            <div id="comments">
+                <div class="comment">
+                    <div class="comment-avatar">U</div>
+                    <div class="comment-content">
+                        <p>No comments yet. Be the first to comment!</p>
+                        <div class="comment-timestamp">Just now</div>
+                    </div>
+                </div>
+            </div>
+            <button class="google-login" onclick="handleGoogleLogin()">Login with Google to Comment</button>
+            <input type="text" id="comment-input" placeholder="Add a comment..." disabled>
+            <button onclick="postComment()" disabled>Post</button>
+        </div>
+        <div class="theme-toggle" onclick="toggleTheme()">🌓</div>
+        <button id="logout-button" onclick="handleLogout()">Logout</button>
+    </main>
+    <footer>
+        <p>Powered by R/Sivali Central College</p>
+        <div class="social-media">
+            <a href="#">Facebook</a> | <a href="#">Twitter</a> | <a href="#">Instagram</a>
+        </div>
+    </footer>
+    <div id="admin-popup" class="admin-popup">
+        <h2>Admin Login</h2>
+        <input type="text" id="admin-username" placeholder="Username">
+        <input type="password" id="admin-password" placeholder="Password">
+        <button onclick="adminLogin()">Login</button>
+        <button onclick="toggleAdminPopup()">Close</button>
+    </div>
+    <script>
+        const maxScore = 1000;
+        let scores = { Atigala: 800, Parakrama: 650, Vijaya: 900, Gemunu: 850 };
+        let isDarkTheme = false;
+        let isAdminLoggedIn = false;
+        let isUserLoggedIn = false;
+
+        // Load events from localStorage or use default events
+        let savedEvents = JSON.parse(localStorage.getItem('events')) || [
+            "Football Match - 10:00 AM",
+            "Relay Race - 12:00 PM",
+            "High Jump - 2:00 PM"
+        ];
+
+        // Function to save events to localStorage
+        function saveEvents() {
+            localStorage.setItem('events', JSON.stringify(savedEvents));
+        }
+
+        // Function to load events into the DOM
+        function loadEvents() {
+            const eventList = document.getElementById('event-list');
+            eventList.innerHTML = savedEvents.map((event, index) => `
+                <li>
+                    <input type="text" value="${event}" id="event-${index}">
+                    ${isAdminLoggedIn ? `
+                        <button onclick="updateEvent(${index})">Update</button>
+                        <button onclick="deleteEvent(${index})">Delete</button>
+                    ` : ''}
+                </li>
+            `).join('') + (isAdminLoggedIn ? `
+                <li>
+                    <input type="text" id="new-event" placeholder="Add new event">
+                    <button onclick="addEvent()">Add</button>
+                </li>
+            ` : '');
+        }
+
+        // Function to add a new event
+        function addEvent() {
+            const newEventInput = document.getElementById('new-event');
+            const eventText = newEventInput.value.trim();
+            if (eventText) {
+                savedEvents.push(eventText);
+                saveEvents();
+                loadEvents();
+                newEventInput.value = '';
+            }
+        }
+
+        // Function to update an event
+        function updateEvent(index) {
+            const eventInput = document.getElementById(`event-${index}`);
+            const newEventText = eventInput.value.trim();
+            if (newEventText) {
+                savedEvents[index] = newEventText;
+                saveEvents();
+                loadEvents();
+            }
+        }
+
+        // Function to delete an event
+        function deleteEvent(index) {
+            savedEvents.splice(index, 1);
+            saveEvents();
+            loadEvents();
+        }
+
+        // Load events when the page loads
+        loadEvents();
+
+        // Function to toggle admin login/logout button
+        function toggleAdminButton() {
+            const adminIcon = document.getElementById('admin-icon');
+            if (isAdminLoggedIn) {
+                adminIcon.textContent = '🚪'; // Logout icon
+                adminIcon.setAttribute('onclick', 'handleLogout()');
+            } else {
+                adminIcon.textContent = '🔑'; // Login icon
+                adminIcon.setAttribute('onclick', 'toggleAdminPopup()');
+            }
+        }
+
+        // Admin login function
+        function adminLogin() {
+            const username = document.getElementById('admin-username').value;
+            const password = document.getElementById('admin-password').value;
+            if (username === "admin" && password === "password") {
+                alert('Login successful!');
+                isAdminLoggedIn = true;
+                toggleAdminPopup();
+                document.querySelectorAll('.mark-input').forEach(input => {
+                    input.style.display = 'block';
+                });
+                document.getElementById('logout-button').style.display = 'block';
+                loadEvents(); // Reload events with admin controls
+                toggleAdminButton(); // Toggle admin button to logout
+            } else {
+                alert('Invalid credentials!');
+            }
+        }
+        
+        // Admin logout function
+        function handleLogout() {
+            isAdminLoggedIn = false;
+            document.querySelectorAll('.mark-input').forEach(input => {
+                input.style.display = 'none';
+            });
+            document.getElementById('logout-button').style.display = 'none';
+            loadEvents(); // Reload events without admin controls
+            toggleAdminButton(); // Toggle admin button to login
+            alert('Logged out successfully!');
+        }
+
+        // Rest of the JavaScript functions remain unchanged
+        function updateScore(house, value) {
+            value = Math.max(0, Math.min(maxScore, parseInt(value)));
+            scores[house] = value;
+            const percentage = (value / maxScore) * 100 + "%";
+            const bar = document.getElementById("bar-" + house);
+            bar.style.width = percentage;
+            bar.innerText = value;
+            updateLeaderboard();
+        }
+
+        function updateLeaderboard() {
+            const sortedHouses = Object.keys(scores).sort((a, b) => scores[b] - scores[a]);
+            const leaderboard = document.getElementById('leaderboard-list');
+            leaderboard.innerHTML = sortedHouses.map(house => `
+                <li>${house}: <span id="leader-${house}">${scores[house]}</span></li>
+            `).join('');
+        }
+
+        function postComment() {
+            if (!isUserLoggedIn) {
+                alert("Please login with Google to comment.");
+                return;
+            }
+            const commentInput = document.getElementById('comment-input');
+            const comment = commentInput.value.trim();
+            if (comment) {
+                const commentsDiv = document.getElementById('comments');
+                const newComment = document.createElement('div');
+                newComment.classList.add('comment');
+                newComment.innerHTML = `
+                    <div class="comment-avatar">U</div>
+                    <div class="comment-content">
+                        <p>${comment}</p>
+                        <div class="comment-timestamp">${new Date().toLocaleTimeString()}</div>
+                    </div>
+                `;
+                commentsDiv.appendChild(newComment);
+                commentInput.value = '';
+                commentsDiv.scrollTop = commentsDiv.scrollHeight;
+            }
+        }
+
+        function toggleTheme() {
+            isDarkTheme = !isDarkTheme;
+            document.body.classList.toggle('dark-theme', isDarkTheme);
+        }
+
+        function toggleAdminPopup() {
+            const popup = document.getElementById('admin-popup');
+            popup.style.display = popup.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function handleGoogleLogin() {
+            // Simulate Google login
+            isUserLoggedIn = true;
+            document.getElementById('comment-input').disabled = false;
+            document.querySelector('#comment-section button').disabled = false;
+            alert('Logged in with Google successfully!');
+        }
+
+        updateLeaderboard();
+        </script>
+        <!DOCTYPE html>
+<html lang="en">
+<head>
+    <!--soap612(mmanipura)-->
+    <style>
+        /* Add style for the share button */
+        #share-button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 20px auto;
+            display: block;
+            font-size: 16px;
+            transition: background 0.3s;
+        }
+
+        #share-button:hover {
+            background: #0056b3;
+        }
+
+        /* Hide the canvas element */
+        #score-canvas {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <!--soap612-->
+
+    
+    <button id="share-button">📷 Share Scores as Image</button>
+
+   
+    <canvas id="score-canvas" width="1200" height="630"></canvas>
+
+    <script>
+        // Function to generate the shareable image
+        function generateShareableImage() {
+            const canvas = document.getElementById('score-canvas');
+            const ctx = canvas.getContext('2d');
+
+            // Set background color
+            ctx.fillStyle = isDarkTheme ? '#121212' : '#ffffff';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Add title
+            ctx.font = 'bold 48px Poppins';
+            ctx.fillStyle = isDarkTheme ? '#ffffff' : '#000000';
+            ctx.textAlign = 'center';
+            ctx.fillText('Sports Meet Live Scores', canvas.width / 2, 100);
+
+            // Draw scores
+            const houseColors = {
+                Atigala: 'yellow',
+                Parakrama: 'green',
+                Vijaya: 'red',
+                Gemunu: 'blue'
+            };
+
+            let yOffset = 200;
+            Object.keys(scores).forEach((house, index) => {
+                // Draw house name
+                ctx.font = 'bold 36px Poppins';
+                ctx.fillStyle = isDarkTheme ? '#ffffff' : '#000000';
+                ctx.textAlign = 'left';
+                ctx.fillText(house, 100, yOffset);
+
+                // Draw score bar
+                const barWidth = (scores[house] / maxScore) * 800;
+                ctx.fillStyle = houseColors[house];
+                ctx.fillRect(100, yOffset + 30, barWidth, 40);
+
+                // Draw score value
+                ctx.fillStyle = isDarkTheme ? '#ffffff' : '#000000';
+                ctx.fillText(scores[house], 100 + barWidth + 20, yOffset + 60);
+
+                yOffset += 100;
+            });
+
+            // Add footer
+            ctx.font = '16px Poppins';
+            ctx.fillStyle = isDarkTheme ? '#ffffff' : '#000000';
+            ctx.textAlign = 'center';
+            ctx.fillText('Powered by the #SCCPA and #SCCMU', canvas.width / 2, canvas.height - 20);
+
+            // Convert canvas to image
+            const image = canvas.toDataURL('image/png');
+
+            // Create a download link
+            const link = document.createElement('a');
+            link.href = image;
+            link.download = 'sports-meet-scores.png';
+            link.click();
+        }
+
+        // Add event listener to the share button
+        document.getElementById('share-button').addEventListener('click', generateShareableImage);
+    </script>
+</body>
+</html>
+</body>
+</html>
